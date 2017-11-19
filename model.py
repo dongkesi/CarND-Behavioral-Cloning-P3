@@ -107,7 +107,7 @@ def net():
     # (31, 158, 24) -> (14, 77, 36)
     # model.add(Conv2D(36, 5, strides=(2, 2), padding='valid', activation='elu'))
     model.add(MaxPool2D((2, 2), strides=(2, 2)))
-    # model.add(Dropout(0.5))
+    model.add(Dropout(0.5))
     # (14, 77, 36) -> (5, 37, 48)
     model.add(Conv2D(48, 5, strides=(2, 2), padding='valid', activation='elu'))
     # model.add(Dropout(0.5))
@@ -146,7 +146,7 @@ def train(model, train_data, validation_data, batch_size, epochs):
     if os.path.isfile(weights_path):
         print('load weights')
         model.load_weights(weights_path)
-    model.compile(loss='mse', optimizer=optimizers.Adam(lr=5e-04))
+    model.compile(loss='mse', optimizer=optimizers.Adam(lr=1e-04))
     history = model.fit_generator(generator=train_generator,
                                   steps_per_epoch=n_train_steps,
                                   validation_data=validation_generator,
