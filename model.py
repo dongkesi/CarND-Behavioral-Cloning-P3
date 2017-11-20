@@ -10,10 +10,10 @@ from keras.callbacks import EarlyStopping
 import platform
 import os
 
-BATCH_SIZE = 384
-EPOCHS = 20
+BATCH_SIZE = 256
+EPOCHS = 1
 IS_AUGMENT = True
-AUG_MULTIPLY = 6
+AUG_MULTIPLY = 2
 PATH = './h-data/IMG/'
 csv_path = './h-data/driving_log.csv'
 
@@ -42,23 +42,22 @@ def generator(samples, file_path ='./data/IMG/', is_augment = True, batch=32):
             angles = []
             for batch_sample in batch_samples:
                 if is_augment:
-                    for camera in range(3):
-                        # camera = np.random.randint(3)
-                        try:
-                            image = plt.imread(file_path + batch_sample[camera].split(delimiter)[-1])
-                        except PermissionError:
-                            print(batch_sample[camera].split(delimiter))
-                            continue
-                        images.append(image)
-                        center_angle = float(batch_sample[3])
-                        correction = 0.18
-                        if camera == 0:
-                            angle = center_angle
-                        elif camera == 1:
-                            angle = center_angle + correction
-                        else:
-                            angle = center_angle - correction
-                        angles.append(angle)
+                    camera = np.random.randint(3)
+                    try:
+                        image = plt.imread(file_path + batch_sample[camera].split(delimiter)[-1])
+                    except PermissionError:
+                        print(batch_sample[camera].split(delimiter))
+                        continue
+                    images.append(image)
+                    center_angle = float(batch_sample[3])
+                    correction = 0.18
+                    if camera == 0:
+                        angle = center_angle
+                    elif camera == 1:
+                        angle = center_angle + correction
+                    else:
+                        angle = center_angle - correction
+                    angles.append(angle)
                 else:
                     name = file_path + batch_sample[0].split(delimiter)[-1]
                     center_image = plt.imread(name)
