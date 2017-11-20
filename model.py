@@ -31,11 +31,9 @@ def augment(x, y):
 
 def generator(samples, file_path ='./data/IMG/', is_augment = True, batch=32):
     n_samples = len(samples)
-    # print('n_samples', n_samples)
     while 1:
         samples = shuffle(samples)
         batch_size = int(batch / AUG_MULTIPLY) if is_augment else batch
-        # print('batch_size', batch_size)
         for offset in range(0, n_samples, batch_size):
             batch_samples = samples[offset:offset+batch_size]
             images = []
