@@ -10,14 +10,15 @@ from keras.callbacks import EarlyStopping
 import platform
 import os
 
-BATCH_SIZE = 256
-EPOCHS = 1
+BATCH_SIZE = 384
+EPOCHS = 20
 IS_AUGMENT = True
-AUG_MULTIPLY = 2
+AUG_MULTIPLY = 6
 PATH = './h-data/IMG/'
 csv_path = './h-data/driving_log.csv'
 
 delimiter = '\\'
+
 
 def augment(x, y):
     augmented_images, augmented_measurements = [], []
@@ -41,34 +42,23 @@ def generator(samples, file_path ='./data/IMG/', is_augment = True, batch=32):
             angles = []
             for batch_sample in batch_samples:
                 if is_augment:
-                    camera = np.random.randint(3)
-                    try:
-                        image = plt.imread(file_path + batch_sample[camera].split(delimiter)[-1])
-                    except PermissionError:
-                        print(batch_sample[camera].split(delimiter))
-                    images.append(image)
-                    center_angle = float(batch_sample[3])
-                    correction = 0.18
-                    if camera == 0:
-                        angle = center_angle
-                    elif camera == 1:
-                        angle = center_angle + correction
-                    else:
-                        angle = center_angle - correction
-                    angles.append(angle)
-
-                    # center_image = plt.imread(file_path + batch_sample[0].split(delimiter)[-1])
-                    # left_image = plt.imread(file_path + batch_sample[1].split(delimiter)[-1])
-                    # right_image = plt.imread(file_path + batch_sample[2].split(delimiter)[-1])
-                    #
-                    # correction = 0.2
-                    # center_angle = float(batch_sample[3])
-                    # left_angle = center_angle + correction
-                    # right_angle = center_angle - correction
-                    #
-                    # images.extend([center_image, left_image, right_image])
-                    # angles.extend([center_angle, left_angle, right_angle])
-
+                    for camera in range(3):
+                        # camera = np.random.randint(3)
+                        try:
+                            image = plt.imread(file_path + batch_sample[camera].split(delimiter)[-1])
+                        except PermissionError:
+                            print(batch_sample[camera].split(delimiter))
+                            continue
+                        images.append(image)
+                        center_angle = float(batch_sample[3])
+                        correction = 0.18
+                        if camera == 0:
+                            angle = center_angle
+                        elif camera == 1:
+                            angle = center_angle + correction
+                        else:
+                            angle = center_angle - correction
+                        angles.append(angle)
                 else:
                     name = file_path + batch_sample[0].split(delimiter)[-1]
                     center_image = plt.imread(name)
@@ -99,26 +89,18 @@ def get_samples(csv_path):
 def net():
     model = Sequential()
     model.add(Lambda(lambda x: (x / 255.0) - 0.5, input_shape=(160, 320, 3)))
-    # (160, 320, 3) -> (65, 320, 3)
+
     model.add(Cropping2D(cropping=((70, 25), (0, 0))))
-    # (65, 320, 3) -> (31, 158, 24)
     model.add(Conv2D(24, 5, strides=(2, 2), padding='valid', activation='elu'))
-    # model.add(Dropout(0.5))
-    # (31, 158, 24) -> (14, 77, 36)
     # model.add(Conv2D(36, 5, strides=(2, 2), padding='valid', activation='elu'))
     model.add(MaxPool2D((2, 2), strides=(2, 2)))
     model.add(Dropout(0.5))
-    # (14, 77, 36) -> (5, 37, 48)
     model.add(Conv2D(48, 5, strides=(2, 2), padding='valid', activation='elu'))
-    # model.add(Dropout(0.5))
-    # (5, 37, 48) -> (3, 35, 64)
     # model.add(Conv2D(64, 3, strides=(1, 1), padding='valid', activation='elu'))
     model.add(MaxPool2D((2, 2), strides=(2, 2)))
-    # model.add(Dropout(0.5))
-    # (3, 35, 64) -> (1, 33, 64)
     model.add(Conv2D(64, 3, strides=(1, 1), padding='valid', activation='elu'))
     model.add(Dropout(0.5))
-    #
+
     model.add(Flatten())
     model.add(Dense(100, activation='elu'))
     model.add(Dropout(0.5))
@@ -163,6 +145,7 @@ def train(model, train_data, validation_data, batch_size, epochs):
 origin_samples = get_samples(csv_path)
 train_samples, validation_samples = train_test_split(shuffle(origin_samples), test_size=0.2)
 model_obj = net()
+print(model_obj.summary())
 history_obj = train(model_obj, train_samples, validation_samples, BATCH_SIZE, EPOCHS)
 
 
