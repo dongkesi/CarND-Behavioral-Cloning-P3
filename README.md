@@ -46,12 +46,13 @@ conda env create -f carnd-p3-env.yml
 
 #### 2.2. Run Model
 
-**1**. Open Simulator, select Track and Autonomous Mode.
-**2**. Activate Environment on the command line.
+* Open Simulator, select Track and Autonomous Mode.
+
+* Activate Environment on the command line.
 ```sh
 source activate carnd-term1
 ```
-**3**. Execute following script, waiting the model to load, it will take half a minute.
+* Execute following script, waiting the model to load, it will take half a minute.
 ```sh
 python drive.py model.h5
 ```
