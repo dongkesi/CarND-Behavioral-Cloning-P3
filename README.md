@@ -76,6 +76,10 @@ I used Python generator and following steps and technique to generate images.
 
 Note [1]: Here is a little confused according to course [description](https://classroom.udacity.com/nanodegrees/nd013/parts/fbf77062-5703-404e-b60c-95b78b2f3f9e/modules/6df7ae49-c61c-4bb2-a23e-6527e69209ec/lessons/46a70500-493e-4057-a78e-b3075933709d/concepts/2cd424ad-a661-4754-8421-aec8cb018005). As my understanding, turn left, the left camera angle absolute should be less than the center one and the right camera angle absolute should be large than the center one, and vice versa. We can notice the steer angle in csv file, the angle is negative during turning left, so for left camera angle, abs(center_angle + 0.18) < abs(center_angle). The steer angle is positive when turning right, so for left camera angle, abs(center_angle + 0.18) > abs(center_angle).
 
+<div align=center>
+<img src="./writeup_res/process.jpg" height="75%" width="75%" alt="Porcessed"/>
+</div>
+
 ```python
 def augment(x, y):
     augmented_images, augmented_measurements = [], []
